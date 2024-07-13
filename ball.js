@@ -1,32 +1,39 @@
 
 class Ball{
     constructor() {
-        this.position = createVector(random(5, width), random(5, height));
+        this.position = createVector(random(10, width-10), random(10, height-10));
         this.velocity = createVector(random(-4, 4), random(-4, 4));
         this.radius = 6 + noise(this.position.x, this.position.y) * 4;
         this.color = color(random(10,255), random(10,255), random(255));
+        this.wallCollisionLength = 0;
     }
     checkCollision(other) {
-        return collideCircleCircle(this.position.x, this.position.y, this.radius * 2, other.position.x, other.position.y, other.radius * 2);
+        return collideCircleCircle(this.position.x, this.position.y, this.radius * 2 + 1, other.position.x, other.position.y, other.radius * 2 + 1);
     }
     checkEdges() {
-        if (collideLineCircle(0, 0, width, 0, this.position.x, this.position.y, this.radius * 2)) {
+        if (collideLineCircle(0, 4, width, 4, this.position.x, this.position.y, this.radius * 2) || collideLineCircle(0, height-4, width, height-4, this.position.x, this.position.y, this.radius * 2)) {
             this.velocity.y *= -1;
+            this.wallCollisionLength += 1;
         }
-        if (collideLineCircle(0, 0, 0, height, this.position.x, this.position.y, this.radius * 2)) {
+        else if (collideLineCircle(4, 0, 4, height, this.position.x, this.position.y, this.radius * 2) || collideLineCircle(width-4, 0, width-4, height, this.position.x, this.position.y, this.radius * 2)) {
             this.velocity.x *= -1;
+            this.wallCollisionLength += 1;
         }
-        if (collideLineCircle(width, 0, width, height, this.position.x, this.position.y, this.radius * 2)) {
-            this.velocity.x *= -1;
+        else{
+            this.wallCollisionLength = 0;
         }
-        if (collideLineCircle(0, height, width, height, this.position.x, this.position.y, this.radius * 2)) {
-            this.velocity.y *= -1;
+        if(this.wallCollisionLength > 10){
+            this.position.x = random(10, width-10);
+            this.position.y = random(10, height-10);
+            this.velocity.x = random(-4, 4);
+            this.velocity.y = random(-4, 4);
+            this.wallCollisionLength = 0;
         }
         this.update();
     }
     collide(other) {    
-        let thisMassMultiplier = 2*this.radius / (this.radius + other.radius);
-        let otherMassMultiplier = 2*other.radius / (this.radius + other.radius);
+        let thisMassMultiplier = 2*(this.radius*this.radius*this.radius) / (this.radius*this.radius*this.radius + other.radius*other.radius*other.radius);
+        let otherMassMultiplier = 2*(other.radius*other.radius*other.radius) / (this.radius*this.radius*this.radius + other.radius*other.radius*other.radius);
         let thisPositionDelta = p5.Vector.sub(this.position, other.position);
         let otherPositionDelta = p5.Vector.sub(other.position, this.position);
         let thisVelocityDelta = p5.Vector.sub(this.velocity, other.velocity);

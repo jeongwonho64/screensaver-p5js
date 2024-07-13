@@ -1,7 +1,7 @@
 let balls = [];
 function setup(){
     createCanvas(windowWidth,windowHeight);
-    for (let i = 0; i < 75; i++) {
+    for (let i = 0; i < 80; i++) {
         balls.push(new Ball());
     }
 }
