@@ -24,6 +24,25 @@ class Ball{
         }
         this.update();
     }
+    collide(other) {    
+        let thisMassMultiplier = 2*this.radius / (this.radius + other.radius);
+        let otherMassMultiplier = 2*other.radius / (this.radius + other.radius);
+        let thisPositionDelta = p5.Vector.sub(this.position, other.position);
+        let otherPositionDelta = p5.Vector.sub(other.position, this.position);
+        let thisVelocityDelta = p5.Vector.sub(this.velocity, other.velocity);
+        let otherVelocityDelta = p5.Vector.sub(other.velocity, this.velocity);
+        let thisVelocityChange = p5.Vector.mult(thisPositionDelta, thisVelocityDelta.dot(thisPositionDelta) / thisPositionDelta.magSq());
+        let otherVelocityChange = p5.Vector.mult(otherPositionDelta, otherVelocityDelta.dot(otherPositionDelta) / otherPositionDelta.magSq());
+        this.velocity.sub(p5.Vector.mult(thisVelocityChange, thisMassMultiplier));
+        other.velocity.sub(p5.Vector.mult(otherVelocityChange, otherMassMultiplier));
+        this.velocity.x += noise(this.position.x, this.position.y) * 0.1;
+        this.velocity.y += noise(this.position.x, this.position.y) * 0.1;
+        other.velocity.x += noise(other.position.x, other.position.y) * 0.1;
+        other.velocity.y += noise(other.position.x, other.position.y) * 0.1;
+    }
+    update() {
+        this.position.add(this.velocity);
+    }
     show() {
         fill(this.color);
         noStroke();
