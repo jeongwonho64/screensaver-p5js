@@ -23,13 +23,16 @@ class Ball{
             this.wallCollisionLength = 0;
         }
         if(this.wallCollisionLength > 10){
-            this.position.x = random(10, width-10);
-            this.position.y = random(10, height-10);
-            this.velocity.x = random(-4, 4);
-            this.velocity.y = random(-4, 4);
-            this.wallCollisionLength = 0;
+            this.reset();
         }
         this.update();
+    }
+    reset(){
+        this.position = createVector(random(10, width-10), random(10, height-10));
+        this.velocity = createVector(random(-4, 4), random(-4, 4));
+        this.radius = 6 + noise(this.position.x, this.position.y) * 4;
+        this.color = color(random(10,255), random(10,255), random(255));
+        this.wallCollisionLength = 0;
     }
     collide(other) {    
         let thisMassMultiplier = 2*(this.radius*this.radius*this.radius) / (this.radius*this.radius*this.radius + other.radius*other.radius*other.radius);
