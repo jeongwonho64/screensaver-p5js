@@ -13,7 +13,6 @@ function preload(){
 function setup(){
     //create the canvas and the balls
     createCanvas(windowWidth,windowHeight);
-    balls = [];
     for (let i = 0; i < ballcnt; i++) {
         balls.push(new Ball());
     }

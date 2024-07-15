@@ -13,11 +13,12 @@ class Ball{
         return collideCircleCircle(this.position.x, this.position.y, this.radius * 2 + 1, other.position.x, other.position.y, other.radius * 2 + 1);
     }
     checkEdges() {
-        if (collideLineCircle(0, 4, width, 4, this.position.x, this.position.y, this.radius * 2) || collideLineCircle(0, height-4, width, height-4, this.position.x, this.position.y, this.radius * 2)) {
+        //check if the ball is colliding with the edges of the screen
+        if (this.position.y < 4 || this.position.y > height - 4) {
             this.velocity.y *= -1;
             this.wallCollisionLength += 1;
         }
-        else if (collideLineCircle(4, 0, 4, height, this.position.x, this.position.y, this.radius * 2) || collideLineCircle(width-4, 0, width-4, height, this.position.x, this.position.y, this.radius * 2)) {
+        else if (this.position.x < 4 || this.position.x > width - 4) {
             this.velocity.x *= -1;
             this.wallCollisionLength += 1;
         }
@@ -40,8 +41,8 @@ class Ball{
     }
     collide(other) {
         //collide this ball with another ball. physics from https://en.wikipedia.org/wiki/Elastic_collision
-        let thisMassMultiplier = 2*(this.radius*this.radius*this.radius) / (this.radius*this.radius*this.radius + other.radius*other.radius*other.radius);
-        let otherMassMultiplier = 2*(other.radius*other.radius*other.radius) / (this.radius*this.radius*this.radius + other.radius*other.radius*other.radius);
+        let thisMassMultiplier = 2*(this.radius**3) / (this.radius**3 + other.radius**3);
+        let otherMassMultiplier = 2*(other.radius**3) / (this.radius**3 + other.radius**3);
         let thisPositionDelta = p5.Vector.sub(this.position, other.position);
         let otherPositionDelta = p5.Vector.sub(other.position, this.position);
         let thisVelocityDelta = p5.Vector.sub(this.velocity, other.velocity);
@@ -50,14 +51,16 @@ class Ball{
         let otherVelocityChange = p5.Vector.mult(otherPositionDelta, otherVelocityDelta.dot(otherPositionDelta) / otherPositionDelta.magSq());
         this.velocity.sub(p5.Vector.mult(thisVelocityChange, thisMassMultiplier));
         other.velocity.sub(p5.Vector.mult(otherVelocityChange, otherMassMultiplier));
-        this.velocity.x += noise(this.position.x, this.position.y) * 0.1;
-        this.velocity.y += noise(this.position.x, this.position.y) * 0.1;
-        other.velocity.x += noise(other.position.x, other.position.y) * 0.1;
-        other.velocity.y += noise(other.position.x, other.position.y) * 0.1;
+        this.velocity.x += noise(this.position.x, this.position.y) * 0.01;
+        this.velocity.y += noise(this.position.x, this.position.y) * 0.01;
+        other.velocity.x += noise(other.position.x, other.position.y) * 0.01;
+        other.velocity.y += noise(other.position.x, other.position.y) * 0.01;
     }
     update() {
         //update the ball's position
         this.position.add(this.velocity);
+        this.position.x = constrain(this.position.x, 0, width);
+        this.position.y = constrain(this.position.y, 0, height);
     }
     show() {
         //draw the ball
